@@ -1,21 +1,10 @@
-from contextlib import asynccontextmanager
-from datetime import datetime
-
 import uvicorn
 from authx import AuthX, AuthXConfig
-from fastapi import FastAPI, Depends
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-
+from fastapi import Depends
 from api import router as api_router
 from create_fastapi_app import create_app
-from models.artist import Base
 
 app = create_app(create_custom_static_urls=True)
-
-engine = create_async_engine("postgresql+asyncpg://admin:admin@db:5432/lc")  # postgre
-
-new_session = async_sessionmaker(engine, expire_on_commit=False)
 
 config = AuthXConfig(
     JWT_SECRET_KEY="your-secret-key0",  # Change this!
