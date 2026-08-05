@@ -20,3 +20,7 @@ class ArtistWrite(BaseModel):
     listeners: int
     scrobbles: int
     ratio: float
+
+
+class ArtistCreate(BaseModel):
+    name: str

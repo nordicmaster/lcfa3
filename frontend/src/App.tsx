@@ -15,7 +15,13 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
+  const [name, setName] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [message, setMessage] = useState<string | null>(null)
+  const [messageType, setMessageType] = useState<'success' | 'error'>('success')
+
+  const loadArtists = () => {
+    setLoading(true)
     fetch('/api/v1/artists')
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -29,7 +35,45 @@ function App() {
         setError(err.message)
         setLoading(false)
       })
+  }
+
+  useEffect(() => {
+    loadArtists()
   }, [])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const trimmed = name.trim()
+    if (!trimmed) return
+
+    setSubmitting(true)
+    setMessage(null)
+
+    try {
+      const res = await fetch('/api/v1/artists', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: trimmed }),
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const artist: Artist = await res.json()
+
+      const existed = artists.some((a) => a.name === artist.name)
+      setMessageType('success')
+      setMessage(
+        existed
+          ? `Artist "${artist.name}" already existed — row overridden.`
+          : `Artist "${artist.name}" created.`,
+      )
+      setName('')
+      loadArtists()
+    } catch (err) {
+      setMessageType('error')
+      setMessage(`Failed to save artist: ${(err as Error).message}`)
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   if (loading) return <div style={styles.center}>Loading artists...</div>
   if (error) return <div style={styles.center}>Error: {error}</div>
@@ -37,6 +81,31 @@ function App() {
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Artists</h1>
+
+      <form onSubmit={handleSubmit} style={styles.form}>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Artist name"
+          style={styles.input}
+          required
+        />
+        <button type="submit" style={styles.button} disabled={submitting}>
+          {submitting ? 'Saving...' : 'Create / Override'}
+        </button>
+      </form>
+
+      {message && (
+        <div
+          style={
+            messageType === 'success' ? styles.messageSuccess : styles.messageError
+          }
+        >
+          {message}
+        </div>
+      )}
+
       <table style={styles.table}>
         <thead>
           <tr>
@@ -73,6 +142,43 @@ const styles: Record<string, React.CSSProperties> = {
   title: {
     textAlign: 'center',
     marginBottom: 24,
+  },
+  form: {
+    display: 'flex',
+    gap: 12,
+    marginBottom: 16,
+  },
+  input: {
+    flex: 1,
+    padding: '10px 12px',
+    fontSize: 16,
+    border: '1px solid #ccc',
+    borderRadius: 4,
+  },
+  button: {
+    padding: '10px 20px',
+    fontSize: 16,
+    border: 'none',
+    borderRadius: 4,
+    background: '#007bff',
+    color: '#fff',
+    cursor: 'pointer',
+  },
+  messageSuccess: {
+    padding: '10px 12px',
+    marginBottom: 16,
+    background: '#d4edda',
+    color: '#155724',
+    border: '1px solid #c3e6cb',
+    borderRadius: 4,
+  },
+  messageError: {
+    padding: '10px 12px',
+    marginBottom: 16,
+    background: '#f8d7da',
+    color: '#721c24',
+    border: '1px solid #f5c6cb',
+    borderRadius: 4,
   },
   table: {
     width: '100%',
