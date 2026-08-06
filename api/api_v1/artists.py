@@ -2,29 +2,24 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database import new_session
+from database import get_db
 from models.artist import ArtistModel
 from schemas.artist import ArtistCreate, ArtistRead
 
 router = APIRouter(tags=["ARTISTS"])
 
 
-async def get_session():
-    async with new_session() as session:
-        yield session
-
-
-@router.get("/artists", response_model=list[ArtistRead])
-async def get_artists(session: AsyncSession = Depends(get_session)):
+@router.get("", response_model=list[ArtistRead])
+async def get_artists(session: AsyncSession = Depends(get_db)):
     result = await session.execute(select(ArtistModel).order_by(ArtistModel.id))
     artists = result.scalars().all()
     return artists
 
 
-@router.post("/artists", response_model=ArtistRead)
+@router.post("", response_model=ArtistRead)
 async def create_or_override_artist(
     body: ArtistCreate,
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_db),
 ):
     result = await session.execute(
         select(ArtistModel).where(ArtistModel.name == body.name)
