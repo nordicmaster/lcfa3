@@ -4,9 +4,7 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, Float
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
 from sqlalchemy.sql import func
 
-
-class Base(DeclarativeBase):
-    pass
+from .base import Base
 
 
 class ArtistModel(Base):
