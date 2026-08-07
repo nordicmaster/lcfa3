@@ -13,7 +13,7 @@ async def get_lastfm_info(name: str) -> ArtistWrite | str:
         response = await client.get(url=settings.lastfm.base_url, params=myobj, timeout=10.0)
         x_info = response.json()
         if 'error' in x_info:
-            return x_info["message"] + "<br>"
+            return x_info["message"]
         listeners = x_info["artist"]["stats"]["listeners"]
         totalscrobbles = x_info["artist"]["stats"]["playcount"]
         new_artist = ArtistWrite(

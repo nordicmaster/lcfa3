@@ -55,7 +55,10 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: trimmed }),
       })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      if (!res.ok) {
+        const errorText = await res.text()
+        throw new Error(errorText || `HTTP ${res.status}`)
+      }
       const artist: Artist = await res.json()
 
       const existed = artists.some((a) => a.name === artist.name)
@@ -121,8 +124,8 @@ function App() {
             <tr key={artist.id}>
               <td style={styles.td}>{artist.id}</td>
               <td style={styles.td}>{artist.name}</td>
-              <td style={styles.td}>{artist.listeners.toLocaleString()}</td>
-              <td style={styles.td}>{artist.scrobbles.toLocaleString()}</td>
+              <td style={styles.td}>{artist.listeners.toLocaleString("ru-RU")}</td>
+              <td style={styles.td}>{artist.scrobbles.toLocaleString("ru-RU")}</td>
               <td style={styles.td}>{artist.ratio.toFixed(2)}</td>
             </tr>
           ))}
