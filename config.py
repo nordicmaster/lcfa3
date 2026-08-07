@@ -23,6 +23,11 @@ class ApiPrefix(BaseModel):
     v1: ApiV1Prefix = ApiV1Prefix()
 
 
+class LastfmConfig(BaseModel):
+    base_url: str = 'https://ws.audioscrobbler.com/2.0/'
+    api_key: str = '57ee3318536b23ee81d6b27e36997cde'
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env"),
@@ -32,6 +37,7 @@ class Settings(BaseSettings):
     )
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
+    lastfm: LastfmConfig = LastfmConfig()
     # mysql: MySQLConfig
 
 

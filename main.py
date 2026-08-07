@@ -28,7 +28,7 @@ def health_check():
 
 
 @app.get("/t1")
-def health_check():
+def health_check2():
     return {"e": "t1"}
 
 
