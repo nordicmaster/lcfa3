@@ -23,3 +23,22 @@ async def get_lastfm_info(name: str) -> ArtistWrite | str:
             ratio=float(totalscrobbles) / float(listeners)
         )
     return new_artist
+
+
+async def get_top_tags(artist: str) -> list[tuple[str, int]] | str:
+    """ Gets Artist.GetTopTags for specified artist"""
+    myobj = {'method': 'artist.gettoptags',
+             'artist': artist,
+             'api_key': settings.lastfm.api_key,
+             'format': 'json'}
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url=settings.lastfm.base_url, params=myobj, timeout=10.0)
+        x_info = response.json()
+        if 'error' in x_info:
+            return x_info["message"]
+        tags = x_info["toptags"]["tag"]
+        result = []
+        for tag in tags:
+            if tag["count"] > 20:
+                result.append((str(tag["name"]), tag["count"]))
+    return result

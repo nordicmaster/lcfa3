@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, status, Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -37,6 +39,7 @@ async def create_or_override_artist(
             listeners=lastfm_artist.listeners,
             scrobbles=lastfm_artist.scrobbles,
             ratio=lastfm_artist.ratio,
+            updated_at=datetime.now(timezone.utc),
         )
         session.add(artist)
     else:
