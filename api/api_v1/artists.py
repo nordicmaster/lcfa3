@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, status, Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.dialects.postgresql import insert
 
 from database import get_db
 from lastfm.get_artists import get_lastfm_info, get_top_tags
@@ -29,28 +30,26 @@ async def create_or_override_artist(
     if isinstance(lastfm_artist, str):
         print(f"{body.name} -- {lastfm_artist}")
         return Response(content=lastfm_artist, status_code=status.HTTP_404_NOT_FOUND)
-    result = await session.execute(
-        select(ArtistModel).where(ArtistModel.name == body.name)
+
+    stmt = insert(ArtistModel).values(
+        name=lastfm_artist.name,
+        listeners=lastfm_artist.listeners,
+        scrobbles=lastfm_artist.scrobbles,
+        ratio=lastfm_artist.ratio,
+        updated_at=datetime.now(timezone.utc),
     )
-    artist = result.scalar_one_or_none()
-
-    if artist is None:
-        artist = ArtistModel(
-            name=lastfm_artist.name,
-            listeners=lastfm_artist.listeners,
-            scrobbles=lastfm_artist.scrobbles,
-            ratio=lastfm_artist.ratio,
-            updated_at=datetime.now(timezone.utc),
-        )
-        session.add(artist)
-    else:
-        artist.name = lastfm_artist.name
-        artist.listeners = lastfm_artist.listeners
-        artist.scrobbles = lastfm_artist.scrobbles
-        artist.ratio = lastfm_artist.ratio
-
+    stmt = stmt.on_conflict_do_update(
+        index_elements=[ArtistModel.name],
+        set_={
+            "listeners": stmt.excluded.listeners,
+            "scrobbles": stmt.excluded.scrobbles,
+            "ratio": stmt.excluded.ratio,
+            "updated_at": stmt.excluded.updated_at,
+        },
+    ).returning(ArtistModel)
+    result = await session.execute(stmt)
+    artist = result.scalar_one()
     await session.commit()
-    await session.refresh(artist)
     return artist
 
 

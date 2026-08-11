@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import ArtistTagsPage from './ArtistTagsPage'
+import LastWeekPage from './LastWeekPage'
 import NavBar, { type NavItem } from './NavBar'
 
 interface Artist {
@@ -12,11 +13,12 @@ interface Artist {
   updated_at: string
 }
 
-type Page = 'artists' | 'tags'
+type Page = 'artists' | 'tags' | 'lastWeek'
 
 const NAV_ITEMS: NavItem[] = [
   { id: 'artists', label: 'Artists' },
   { id: 'tags', label: 'Artist Tags' },
+  { id: 'lastWeek', label: 'Last Week' },
 ]
 
 function App() {
@@ -95,6 +97,8 @@ function App() {
 
       {page === 'tags' ? (
         <ArtistTagsPage />
+      ) : page === 'lastWeek' ? (
+        <LastWeekPage />
       ) : loading ? (
         <div style={styles.center}>Loading artists...</div>
       ) : error ? (

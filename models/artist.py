@@ -10,7 +10,7 @@ from .base import Base
 class ArtistModel(Base):
     __tablename__ = "artists"
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(nullable=False)
+    name: Mapped[str] = mapped_column(nullable=False, unique=True)
     listeners: Mapped[int] = mapped_column(nullable=False)
     scrobbles: Mapped[int] = mapped_column(nullable=False)
     ratio: Mapped[float] = mapped_column(nullable=False)
