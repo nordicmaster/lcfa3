@@ -5,8 +5,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
-from lastfm.get_artists import get_lastfm_info
+from lastfm.get_artists import get_lastfm_info, get_top_tags
 from models.artist import ArtistModel
+from models.ignored_tag import IgnoredTagModel
 from schemas.artist import ArtistCreate, ArtistRead
 
 router = APIRouter(tags=["ARTISTS"])
@@ -51,3 +52,22 @@ async def create_or_override_artist(
     await session.commit()
     await session.refresh(artist)
     return artist
+
+
+@router.get("/tags")
+async def get_artists_tags(name: str, session: AsyncSession = Depends(get_db)):
+    result = await session.execute(select(IgnoredTagModel))
+    ig_tags = result.scalars().all()
+    ig_tags_list = [x.name for x in ig_tags]
+
+    tags_from_lastfm = await get_top_tags(name)
+    if isinstance(tags_from_lastfm, str):
+        return Response(
+            content=tags_from_lastfm, status_code=status.HTTP_404_NOT_FOUND
+        )
+    filtered_tags_from_lastfm = []
+    for t in tags_from_lastfm:
+        if t[0] not in ig_tags_list:
+            filtered_tags_from_lastfm.append(t)
+
+    return filtered_tags_from_lastfm

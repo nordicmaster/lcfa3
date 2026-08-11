@@ -1,0 +1,1 @@
+Do not run npm commands. All frontend runs in container, local machine has no npm

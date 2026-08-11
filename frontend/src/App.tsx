@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import ArtistTagsPage from './ArtistTagsPage'
+import NavBar, { type NavItem } from './NavBar'
 
 interface Artist {
   id: number
@@ -10,7 +12,16 @@ interface Artist {
   updated_at: string
 }
 
+type Page = 'artists' | 'tags'
+
+const NAV_ITEMS: NavItem[] = [
+  { id: 'artists', label: 'Artists' },
+  { id: 'tags', label: 'Artist Tags' },
+]
+
 function App() {
+  const [page, setPage] = useState<Page>('artists')
+
   const [artists, setArtists] = useState<Artist[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -78,12 +89,19 @@ function App() {
     }
   }
 
-  if (loading) return <div style={styles.center}>Loading artists...</div>
-  if (error) return <div style={styles.center}>Error: {error}</div>
-
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>Artists</h1>
+      <NavBar items={NAV_ITEMS} current={page} onNavigate={setPage} />
+
+      {page === 'tags' ? (
+        <ArtistTagsPage />
+      ) : loading ? (
+        <div style={styles.center}>Loading artists...</div>
+      ) : error ? (
+        <div style={styles.center}>Error: {error}</div>
+      ) : (
+        <>
+          <h1 style={styles.title}>Artists</h1>
 
       <form onSubmit={handleSubmit} style={styles.form}>
         <input
@@ -129,8 +147,10 @@ function App() {
               <td style={styles.td}>{artist.ratio.toFixed(2)}</td>
             </tr>
           ))}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+        </>
+      )}
     </div>
   )
 }
