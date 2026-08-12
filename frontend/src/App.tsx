@@ -32,6 +32,7 @@ function App() {
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [messageType, setMessageType] = useState<'success' | 'error'>('success')
+  const [hoveredRow, setHoveredRow] = useState<number | null>(null)
 
   const loadArtists = () => {
     setLoading(true)
@@ -53,6 +54,24 @@ function App() {
   useEffect(() => {
     loadArtists()
   }, [])
+
+  const handleDelete = async (id: number) => {
+    try {
+      const res = await fetch(`/api/v1/artists/${id}`, {
+        method: 'DELETE',
+      })
+      if (!res.ok) {
+        const errorText = await res.text()
+        throw new Error(errorText || `HTTP ${res.status}`)
+      }
+      setMessageType('success')
+      setMessage('Artist deleted.')
+      loadArtists()
+    } catch (err) {
+      setMessageType('error')
+      setMessage(`Failed to delete artist: ${(err as Error).message}`)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -139,16 +158,34 @@ function App() {
             <th style={styles.th}>Listeners</th>
             <th style={styles.th}>Scrobbles</th>
             <th style={styles.th}>Ratio</th>
+            <th style={styles.th}></th>
           </tr>
         </thead>
         <tbody>
           {artists.map((artist) => (
-            <tr key={artist.id}>
+            <tr
+              key={artist.id}
+              style={styles.row}
+              onMouseEnter={() => setHoveredRow(artist.id)}
+              onMouseLeave={() => setHoveredRow(null)}
+            >
               <td style={styles.td}>{artist.id}</td>
               <td style={styles.td}>{artist.name}</td>
               <td style={styles.td}>{artist.listeners.toLocaleString("ru-RU")}</td>
               <td style={styles.td}>{artist.scrobbles.toLocaleString("ru-RU")}</td>
               <td style={styles.td}>{artist.ratio.toFixed(2)}</td>
+              <td style={styles.td}>
+                <button
+                  style={{
+                    ...styles.deleteButton,
+                    ...(hoveredRow === artist.id ? styles.deleteButtonVisible : {}),
+                  }}
+                  onClick={() => handleDelete(artist.id)}
+                  title={`Delete ${artist.name}`}
+                >
+                  ✕
+                </button>
+              </td>
             </tr>
           ))}
           </tbody>
@@ -221,6 +258,23 @@ const styles: Record<string, React.CSSProperties> = {
   td: {
     border: '1px solid #ccc',
     padding: '8px 12px',
+  },
+  row: {
+    position: 'relative',
+  },
+  deleteButton: {
+    background: 'transparent',
+    border: 'none',
+    color: '#dc3545',
+    fontSize: 16,
+    cursor: 'pointer',
+    padding: '4px 8px',
+    borderRadius: 4,
+    opacity: 0,
+    transition: 'opacity 0.2s',
+  },
+  deleteButtonVisible: {
+    opacity: 1,
   },
   center: {
     textAlign: 'center',

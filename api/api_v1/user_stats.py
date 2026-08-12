@@ -10,7 +10,8 @@ from schemas.user_stats import UserStatsCreate
 
 router = APIRouter(tags=["USER_STATS"])
 
-@router.get("/last_week")
+
+@router.post("/last_week")
 async def get_artists_last_week(body: UserStatsCreate, session: AsyncSession = Depends(get_db)):
     week_info = await get_last_week_list(body.name)
     return week_info

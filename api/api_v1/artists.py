@@ -53,6 +53,21 @@ async def create_or_override_artist(
     return artist
 
 
+@router.delete("/{artist_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_artist(artist_id: int, session: AsyncSession = Depends(get_db)):
+    result = await session.execute(
+        select(ArtistModel).where(ArtistModel.id == artist_id)
+    )
+    artist = result.scalar_one_or_none()
+    if artist is None:
+        return Response(
+            content="Artist not found", status_code=status.HTTP_404_NOT_FOUND
+        )
+    await session.delete(artist)
+    await session.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 @router.get("/tags")
 async def get_artists_tags(name: str, session: AsyncSession = Depends(get_db)):
     result = await session.execute(select(IgnoredTagModel))

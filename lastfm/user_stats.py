@@ -6,7 +6,7 @@ from config import settings
 async def get_last_week_list(name: str) -> list[tuple[str, int]] | str:
     """ Gets User.GetWeeklyArtistChart for specified user"""
     myobj = {'method': 'user.getWeeklyArtistChart',
-             'artist': name,
+             'user': name,
              'api_key': settings.lastfm.api_key,
              'format': 'json'}
     result = []
@@ -17,5 +17,5 @@ async def get_last_week_list(name: str) -> list[tuple[str, int]] | str:
             return x_info["message"]
         week_artists = x_info["weeklyartistchart"]["artist"]        
         for art in week_artists:
-            result.append(art["name"], art["playcount"])
+            result.append((art["name"], art["playcount"]))
     return result
