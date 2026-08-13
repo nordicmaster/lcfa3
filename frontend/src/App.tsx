@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import ArtistTagsPage from './ArtistTagsPage'
 import LastWeekPage from './LastWeekPage'
 import NavBar, { type NavItem } from './NavBar'
@@ -33,6 +33,8 @@ function App() {
   const [message, setMessage] = useState<string | null>(null)
   const [messageType, setMessageType] = useState<'success' | 'error'>('success')
   const [hoveredRow, setHoveredRow] = useState<number | null>(null)
+  const [sortBy, setSortBy] = useState('ratio')
+  const [order, setOrder] = useState<'asc' | 'desc'>('desc')
 
   const loadArtists = () => {
     setLoading(true)
@@ -54,6 +56,32 @@ function App() {
   useEffect(() => {
     loadArtists()
   }, [])
+
+  const handleSort = (column: string) => {
+    if (sortBy === column) {
+      setOrder(order === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortBy(column)
+      setOrder('desc')
+    }
+  }
+
+  const sortedArtists = useMemo(() => {
+    const sorted = [...artists]
+    sorted.sort((a, b) => {
+      const aVal = a[sortBy as keyof Artist]
+      const bVal = b[sortBy as keyof Artist]
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        return order === 'asc'
+          ? aVal.localeCompare(bVal)
+          : bVal.localeCompare(aVal)
+      }
+      const aNum = aVal as number
+      const bNum = bVal as number
+      return order === 'asc' ? aNum - bNum : bNum - aNum
+    })
+    return sorted
+  }, [artists, sortBy, order])
 
   const handleDelete = async (id: number) => {
     try {
@@ -153,16 +181,36 @@ function App() {
       <table style={styles.table}>
         <thead>
           <tr>
-            <th style={styles.th}>ID</th>
-            <th style={styles.th}>Name</th>
-            <th style={styles.th}>Listeners</th>
-            <th style={styles.th}>Scrobbles</th>
-            <th style={styles.th}>Ratio</th>
+            <th style={styles.th}>
+              <button style={styles.sortButton} onClick={() => handleSort('id')}>
+                ID {sortBy === 'id' && (order === 'asc' ? '▲' : '▼')}
+              </button>
+            </th>
+            <th style={styles.th}>
+              <button style={styles.sortButton} onClick={() => handleSort('name')}>
+                Name {sortBy === 'name' && (order === 'asc' ? '▲' : '▼')}
+              </button>
+            </th>
+            <th style={styles.th}>
+              <button style={styles.sortButton} onClick={() => handleSort('listeners')}>
+                Listeners {sortBy === 'listeners' && (order === 'asc' ? '▲' : '▼')}
+              </button>
+            </th>
+            <th style={styles.th}>
+              <button style={styles.sortButton} onClick={() => handleSort('scrobbles')}>
+                Scrobbles {sortBy === 'scrobbles' && (order === 'asc' ? '▲' : '▼')}
+              </button>
+            </th>
+            <th style={styles.th}>
+              <button style={styles.sortButton} onClick={() => handleSort('ratio')}>
+                Ratio {sortBy === 'ratio' && (order === 'asc' ? '▲' : '▼')}
+              </button>
+            </th>
             <th style={styles.th}></th>
           </tr>
         </thead>
         <tbody>
-          {artists.map((artist) => (
+          {sortedArtists.map((artist) => (
             <tr
               key={artist.id}
               style={styles.row}
@@ -254,6 +302,15 @@ const styles: Record<string, React.CSSProperties> = {
     background: '#f5f5f5',
     textAlign: 'left',
     fontWeight: 600,
+  },
+  sortButton: {
+    background: 'transparent',
+    border: 'none',
+    padding: 0,
+    fontSize: 14,
+    fontWeight: 600,
+    cursor: 'pointer',
+    color: '#333',
   },
   td: {
     border: '1px solid #ccc',

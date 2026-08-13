@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, status, Response
+from fastapi import APIRouter, Depends, status, Response, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.dialects.postgresql import insert
@@ -14,9 +14,26 @@ from schemas.artist import ArtistCreate, ArtistRead
 router = APIRouter(tags=["ARTISTS"])
 
 
+SORTABLE_COLUMNS = {
+    "id": ArtistModel.id,
+    "name": ArtistModel.name,
+    "listeners": ArtistModel.listeners,
+    "scrobbles": ArtistModel.scrobbles,
+    "ratio": ArtistModel.ratio,
+    "created_at": ArtistModel.created_at,
+    "updated_at": ArtistModel.updated_at,
+}
+
+
 @router.get("", response_model=list[ArtistRead])
-async def get_artists(session: AsyncSession = Depends(get_db)):
-    result = await session.execute(select(ArtistModel).order_by(ArtistModel.id))
+async def get_artists(
+    sort_by: str = Query("ratio", pattern="^(id|name|listeners|scrobbles|ratio|created_at|updated_at)$"),
+    order: str = Query("desc", pattern="^(asc|desc)$"),
+    session: AsyncSession = Depends(get_db),
+):
+    column = SORTABLE_COLUMNS[sort_by]
+    order_column = column.desc() if order == "desc" else column.asc()
+    result = await session.execute(select(ArtistModel).order_by(order_column))
     artists = result.scalars().all()
     return artists
 
