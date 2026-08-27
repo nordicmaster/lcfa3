@@ -33,6 +33,7 @@ function App() {
   const [message, setMessage] = useState<string | null>(null)
   const [messageType, setMessageType] = useState<'success' | 'error'>('success')
   const [hoveredRow, setHoveredRow] = useState<number | null>(null)
+  const [lastInsertedId, setLastInsertedId] = useState<number | null>(null)
   const [sortBy, setSortBy] = useState('ratio')
   const [order, setOrder] = useState<'asc' | 'desc'>('desc')
 
@@ -122,6 +123,9 @@ function App() {
       const artist: Artist = await res.json()
 
       const existed = artists.some((a) => a.name === artist.name)
+      if (!existed) {
+        setLastInsertedId(artist.id)
+      }
       setMessageType('success')
       setMessage(
         existed
@@ -182,11 +186,6 @@ function App() {
         <thead>
           <tr>
             <th style={styles.th}>
-              <button style={styles.sortButton} onClick={() => handleSort('id')}>
-                ID {sortBy === 'id' && (order === 'asc' ? '▲' : '▼')}
-              </button>
-            </th>
-            <th style={styles.th}>
               <button style={styles.sortButton} onClick={() => handleSort('name')}>
                 Name {sortBy === 'name' && (order === 'asc' ? '▲' : '▼')}
               </button>
@@ -206,23 +205,25 @@ function App() {
                 Ratio {sortBy === 'ratio' && (order === 'asc' ? '▲' : '▼')}
               </button>
             </th>
-            <th style={styles.th}></th>
+            <th style={styles.thNoBorder}></th>
           </tr>
         </thead>
         <tbody>
           {sortedArtists.map((artist) => (
             <tr
               key={artist.id}
-              style={styles.row}
+              style={{
+                ...styles.row,
+                ...(artist.id === lastInsertedId ? styles.rowHighlighted : {}),
+              }}
               onMouseEnter={() => setHoveredRow(artist.id)}
               onMouseLeave={() => setHoveredRow(null)}
             >
-              <td style={styles.td}>{artist.id}</td>
               <td style={styles.td}>{artist.name}</td>
               <td style={styles.td}>{artist.listeners.toLocaleString("ru-RU")}</td>
               <td style={styles.td}>{artist.scrobbles.toLocaleString("ru-RU")}</td>
               <td style={styles.td}>{artist.ratio.toFixed(2)}</td>
-              <td style={styles.td}>
+              <td style={styles.tdNoBorder}>
                 <button
                   style={{
                     ...styles.deleteButton,
@@ -316,8 +317,19 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px solid #ccc',
     padding: '8px 12px',
   },
+  thNoBorder: {
+    padding: '10px 12px',
+    textAlign: 'left',
+    fontWeight: 600,
+  },
+  tdNoBorder: {
+    padding: '8px 12px',
+  },
   row: {
     position: 'relative',
+  },
+  rowHighlighted: {
+    background: '#fff3cd',
   },
   deleteButton: {
     background: 'transparent',

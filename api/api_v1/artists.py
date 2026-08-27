@@ -10,6 +10,7 @@ from lastfm.get_artists import get_lastfm_info, get_top_tags
 from models.artist import ArtistModel
 from models.ignored_tag import IgnoredTagModel
 from schemas.artist import ArtistCreate, ArtistRead
+from schemas.tag import IgnoredTagCreate, IgnoredTagRead
 
 router = APIRouter(tags=["ARTISTS"])
 
@@ -102,3 +103,46 @@ async def get_artists_tags(name: str, session: AsyncSession = Depends(get_db)):
             filtered_tags_from_lastfm.append(t)
 
     return filtered_tags_from_lastfm
+
+
+@router.get("/tags/ignored", response_model=list[IgnoredTagRead])
+async def get_ignored_tags(session: AsyncSession = Depends(get_db)):
+    result = await session.execute(select(IgnoredTagModel).order_by(IgnoredTagModel.id))
+    return result.scalars().all()
+
+
+@router.post("/tags/ignored", response_model=IgnoredTagRead, status_code=status.HTTP_201_CREATED)
+async def create_ignored_tag(
+    body: IgnoredTagCreate,
+    session: AsyncSession = Depends(get_db),
+):
+    name = body.name.strip()
+    if not name:
+        return Response(
+            content="Tag name must not be empty",
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+    result = await session.execute(select(IgnoredTagModel).where(IgnoredTagModel.name == name))
+    existing = result.scalar_one_or_none()
+    if existing is not None:
+        return Response(
+            content="Tag already ignored", status_code=status.HTTP_409_CONFLICT
+        )
+    ignored_tag = IgnoredTagModel(name=name)
+    session.add(ignored_tag)
+    await session.commit()
+    await session.refresh(ignored_tag)
+    return ignored_tag
+
+
+@router.delete("/tags/ignored/{tag_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_ignored_tag(tag_id: int, session: AsyncSession = Depends(get_db)):
+    result = await session.execute(select(IgnoredTagModel).where(IgnoredTagModel.id == tag_id))
+    ignored_tag = result.scalar_one_or_none()
+    if ignored_tag is None:
+        return Response(
+            content="Ignored tag not found", status_code=status.HTTP_404_NOT_FOUND
+        )
+    await session.delete(ignored_tag)
+    await session.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
