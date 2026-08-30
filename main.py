@@ -1,5 +1,5 @@
 from authx import AuthX, AuthXConfig
-﻿from api import router as api_router
+from api import router as api_router
 from create_fastapi_app import create_app
 from logging_config import setup_logging
 
