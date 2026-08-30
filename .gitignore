@@ -222,3 +222,5 @@ http-client.private.env.json
 .idea/ApifoxUploaderProjectSetting.xml
 # App log files
 logs/
+
+description.txt
