@@ -32,6 +32,10 @@ FastAPI-driven frontend.
 ### 📅 User Stats
 - **Last week chart** — enter any Last.fm username to fetch their weekly artist
   chart (`user.getWeeklyArtistChart`) showing artist → playcount for the past week.
+- **User top tags** — enter any Last.fm username (plus an optional period: overall,
+  last 7 days, month, 3 months, 6 months, or 12 months) to fetch their top artists
+  (`user.getTopArtists`), aggregate each artist's top tags weighted by playcount,
+  and show the resulting tag shares as percentages of all aggregated tag counts.
 
 ### 🛠️ Backend Quality-of-Life
 - **Structured logging** — separate `lcfa3.app` and `lcfa3.db` loggers; every
@@ -121,6 +125,7 @@ All endpoints are prefixed with `/api/v1`.
 | POST   | `/api/v1/artists/tags/ignored`    | Add an ignored tag                      |
 | DELETE | `/api/v1/artists/tags/ignored/{tag_id}` | Remove an ignored tag            |
 | POST   | `/api/v1/user_stats/last_week`    | Last-week artist chart for a username   |
+| POST   | `/api/v1/user_stats/top_tags`     | User's top tags for a username/period   |
 
 Interactive docs: `http://localhost:8000/docs` (Swagger UI) and
 `http://localhost:8000/redoc`.

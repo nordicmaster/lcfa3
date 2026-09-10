@@ -42,3 +42,20 @@ async def get_top_tags(artist: str) -> list[tuple[str, int]] | str:
             if tag["count"] > 20:
                 result.append((str(tag["name"]), tag["count"]))
     return result
+
+
+async def get_similar(artist: str) -> list[str]:
+    """ Gets Artist.GetInfo - similar artists for specified artist"""
+    myobj = {'method': 'artist.getinfo',
+             'artist': artist,
+             'api_key': settings.lastfm.api_key,
+             'format': 'json'}
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url=settings.lastfm.base_url, params=myobj, timeout=10.0)
+        x_info = response.json()
+        if 'error' in x_info:
+            return x_info["message"]
+        artists = x_info["artist"]["similar"]["artist"]
+        if artists:
+            return [art["name"] for art in artists]
+    return []
