@@ -125,14 +125,12 @@ function App() {
       const artist: Artist = await res.json()
 
       const existed = artists.some((a) => a.name === artist.name)
-      if (!existed) {
-        setLastInsertedId(artist.id)
-      }
+      setLastInsertedId(artist.id)
       setMessageType('success')
       setMessage(
         existed
-          ? `Artist "${artist.name}" already existed — row overridden.`
-          : `Artist "${artist.name}" created.`,
+          ? `Artist "${artist.name}" already existed — row overridden. Ratio: ${artist.ratio.toFixed(2)}`
+          : `Artist "${artist.name}" created. Ratio: ${artist.ratio.toFixed(2)}`,
       )
       setName('')
       loadArtists()

@@ -19,7 +19,7 @@ FastAPI-driven frontend.
   both via API query params (`sort_by`, `order`) and by clicking column headers
   in the UI.
 - **Delete artists** — per-row delete with a hover-revealed button and a
-  confirmation-free UX; newly added rows are highlighted.
+  confirmation-free UX; recently created/overridden rows are highlighted.
 
 ### 🏷️ Artist Tags
 - **Tag explorer** — look up an artist and see their top tags straight from
