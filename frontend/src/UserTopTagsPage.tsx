@@ -70,7 +70,7 @@ function UserTopTagsPage() {
           style={styles.select}
         >
           {PERIODS.map((p) => (
-            <option key={p.value} value={p.value}>
+            <option key={p.value} value={p.value} style={styles.option}>
               {p.label}
             </option>
           ))}
@@ -139,6 +139,11 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px solid #ccc',
     borderRadius: 4,
     background: '#fff',
+    color: '#000',
+  },
+  option: {
+    background: '#fff',
+    color: '#000',
   },
   button: {
     padding: '10px 20px',
