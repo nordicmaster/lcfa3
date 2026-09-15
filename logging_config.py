@@ -79,6 +79,12 @@ _LOGGING_CONFIG = {
             "level": _LOG_LEVEL,
             "propagate": False,
         },
+        # Redis cache access/fallback logs.
+        "lcfa3.redis": {
+            "handlers": ["console", "app_file"],
+            "level": _LOG_LEVEL,
+            "propagate": False,
+        },
     },
 }
 

@@ -38,8 +38,17 @@ FastAPI-driven frontend.
   and show the resulting tag shares as percentages of all aggregated tag counts.
 
 ### 🛠️ Backend Quality-of-Life
-- **Structured logging** — separate `lcfa3.app` and `lcfa3.db` loggers; every
-  request (with response time) and every DB query (with execution time) is logged.
+- **Structured logging** — separate `lcfa3.app`, `lcfa3.db` and `lcfa3.redis`
+  loggers; every request (with response time) and every DB query (with execution
+  time) is logged.
+- **Redis artist cache** — artist `listeners`, `scrobbles` and `ratio` are read
+  from **Redis first** and only fall back to **PostgreSQL** when absent. A Redis
+  name index (`artist:index`) lets `GET /api/v1/artists` be served **entirely
+  from Redis** when warm — PostgreSQL is queried only for names missing from the
+  cache; DB rows warm the cache on the fly.
+- **1-minute POST dedup** — a `POST /api/v1/artists` for a name already posted
+  within the last 60 seconds skips the Last.fm call entirely and returns the
+  data from Redis (or DB) instead; the source is noted in the `lcfa3.app` logs.
 - **Request timing middleware** — per-request elapsed-time logging.
 - **Custom API docs** — Swagger UI and ReDoc served from self-hosted static route
   handlers (no CDN dependencies).
@@ -61,6 +70,7 @@ FastAPI-driven frontend.
 |------------|-------------------------------------------------------------------------|
 | Backend    | Python 3.12, FastAPI, Pydantic v2, SQLAlchemy 2 (async), asyncpg        |
 | Database   | PostgreSQL 17, Alembic migrations                                       |
+| Cache      | Redis 7 via redis-py (async) with graceful DB fallback                     |
 | Frontend   | React 18, TypeScript, Vite                                              |
 | External   | Last.fm API (`ws.audioscrobbler.com`) via `httpx`                       |
 | Infra      | Docker, Docker Compose                                                  |
@@ -100,6 +110,7 @@ This starts:
 - Backend API → `http://localhost:8000` (docs at `/docs`)
 - Frontend → `http://localhost:5173`
 - PostgreSQL → `localhost:5432`
+- Redis → `localhost:6379`
 
 Run Alembic migrations against the database:
 

@@ -13,6 +13,8 @@ from fastapi.responses import ORJSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 
+from redis_client import cache
+
 logger = logging.getLogger("lcfa3.app")
 
 
@@ -35,6 +37,10 @@ class RequestTimingMiddleware(BaseHTTPMiddleware):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # startup
+    if await cache.ping():
+        logger.info("Redis connection established")
+    else:
+        logger.warning("Redis is unreachable — caching disabled; falling back to database")
     print("1")
     yield
     # shutdown
