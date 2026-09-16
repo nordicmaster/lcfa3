@@ -1,13 +1,12 @@
 import logging
-from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, status, Response, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.dialects.postgresql import insert
 
 from database import get_db
 from lastfm.get_artists import get_lastfm_info, get_top_tags
+from lastfm.update_artist import push_or_update
 from models.artist import ArtistModel
 from models.ignored_tag import IgnoredTagModel
 from redis_client import cache
@@ -122,28 +121,8 @@ async def create_or_override_artist(
         print(f"{name} -- {lastfm_artist}")
         return Response(content=lastfm_artist, status_code=status.HTTP_404_NOT_FOUND)
 
-    stmt = insert(ArtistModel).values(
-        name=lastfm_artist.name,
-        listeners=lastfm_artist.listeners,
-        scrobbles=lastfm_artist.scrobbles,
-        ratio=lastfm_artist.ratio,
-        updated_at=datetime.now(timezone.utc),
-    )
-    stmt = stmt.on_conflict_do_update(
-        index_elements=[ArtistModel.name],
-        set_={
-            "listeners": stmt.excluded.listeners,
-            "scrobbles": stmt.excluded.scrobbles,
-            "ratio": stmt.excluded.ratio,
-            "updated_at": stmt.excluded.updated_at,
-        },
-    ).returning(ArtistModel)
-    result = await session.execute(stmt)
-    artist = result.scalar_one()
-    await session.commit()
-
-    # Cache the freshly fetched stats and open the 1-minute dedup window.
-    await cache.set_artist(artist)
+    # Upsert the freshly fetched stats, cache them and open the 1-minute dedup window.
+    artist = await push_or_update(session, lastfm_artist)
     await cache.mark_posted(artist.name)
     return artist
 
