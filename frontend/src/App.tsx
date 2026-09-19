@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import ArtistTagsPage from './ArtistTagsPage'
 import LastWeekPage from './LastWeekPage'
 import NavBar, { type NavItem } from './NavBar'
+import TopArtistsPage from './TopArtistsPage'
 import UserTopTagsPage from './UserTopTagsPage'
 
 interface Artist {
@@ -14,13 +15,14 @@ interface Artist {
   updated_at: string
 }
 
-type Page = 'artists' | 'tags' | 'lastWeek' | 'userTags'
+type Page = 'artists' | 'tags' | 'lastWeek' | 'userTags' | 'topArtists'
 
 const NAV_ITEMS: NavItem[] = [
   { id: 'artists', label: 'Artists' },
   { id: 'tags', label: 'Artist Tags' },
   { id: 'lastWeek', label: 'Last Week' },
   { id: 'userTags', label: 'User Top Tags' },
+  { id: 'topArtists', label: 'Top Artists' },
 ]
 
 function App() {
@@ -39,7 +41,7 @@ function App() {
   const [sortBy, setSortBy] = useState('ratio')
   const [order, setOrder] = useState<'asc' | 'desc'>('desc')
 
-  const loadArtists = () => {
+  const loadArtists = useCallback(() => {
     setLoading(true)
     fetch('/api/v1/artists')
       .then((res) => {
@@ -48,17 +50,20 @@ function App() {
       })
       .then((data) => {
         setArtists(data)
+        setError(null)
         setLoading(false)
       })
       .catch((err) => {
         setError(err.message)
         setLoading(false)
       })
-  }
+  }, [])
 
   useEffect(() => {
-    loadArtists()
-  }, [])
+    if (page === 'artists') {
+      loadArtists()
+    }
+  }, [page, loadArtists])
 
   const handleSort = (column: string) => {
     if (sortBy === column) {
@@ -152,6 +157,8 @@ function App() {
         <LastWeekPage />
       ) : page === 'userTags' ? (
         <UserTopTagsPage />
+      ) : page === 'topArtists' ? (
+        <TopArtistsPage />
       ) : loading ? (
         <div style={styles.center}>Loading artists...</div>
       ) : error ? (

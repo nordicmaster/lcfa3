@@ -137,6 +137,7 @@ All endpoints are prefixed with `/api/v1`.
 | DELETE | `/api/v1/artists/tags/ignored/{tag_id}` | Remove an ignored tag            |
 | POST   | `/api/v1/user_stats/last_week`    | Last-week artist chart for a username   |
 | POST   | `/api/v1/user_stats/top_tags`     | User's top tags for a username/period   |
+| POST   | `/api/v1/user_stats/top_artists`  | User's top artists for a username/period |
 
 Interactive docs: `http://localhost:8000/docs` (Swagger UI) and
 `http://localhost:8000/redoc`.
