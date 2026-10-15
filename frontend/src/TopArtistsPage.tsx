@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import styles from './TopArtistsPage.module.css'
 
 type TopArtist = [string, number, number]
 
@@ -52,57 +53,57 @@ function TopArtistsPage() {
   }
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Top Artists</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Top Artists</h1>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Last.fm username"
-          style={styles.input}
+          className={styles.input}
           required
         />
         <select
           value={period}
           onChange={(e) => setPeriod(e.target.value)}
-          style={styles.select}
+          className={styles.select}
         >
           {PERIODS.map((p) => (
-            <option key={p.value} value={p.value} style={styles.option}>
+            <option key={p.value} value={p.value} className={styles.option}>
               {p.label}
             </option>
           ))}
         </select>
-        <button type="submit" style={styles.button} disabled={loading}>
+        <button type="submit" className={styles.button} disabled={loading}>
           {loading ? 'Loading...' : 'Get Top Artists'}
         </button>
       </form>
 
-      {error && <div style={styles.messageError}>Error: {error}</div>}
+      {error && <div className={styles.messageError}>Error: {error}</div>}
 
       {artists !== null && artists.length === 0 && !error && (
-        <div style={styles.messageInfo}>No artists found for &quot;{name.trim()}&quot;.</div>
+        <div className={styles.messageInfo}>No artists found for &quot;{name.trim()}&quot;.</div>
       )}
 
       {artists !== null && artists.length > 0 && (
-        <table style={styles.table}>
+        <table className={styles.table}>
           <thead>
             <tr>
-              <th style={styles.th}>#</th>
-              <th style={styles.th}>Artist</th>
-              <th style={styles.th}>Period playcount</th>
-              <th style={styles.th}>Overall scrobbles</th>
+              <th className={styles.th}>#</th>
+              <th className={styles.th}>Artist</th>
+              <th className={styles.th}>Period playcount</th>
+              <th className={styles.th}>Overall scrobbles</th>
             </tr>
           </thead>
           <tbody>
             {artists.map(([artist, playcount, overall], index) => (
               <tr key={artist}>
-                <td style={styles.td}>{index + 1}</td>
-                <td style={styles.td}>{artist}</td>
-                <td style={styles.td}>{playcount.toLocaleString("ru-RU")}</td>
-                <td style={styles.td}>{overall.toLocaleString("ru-RU")}</td>
+                <td className={styles.td}>{index + 1}</td>
+                <td className={styles.td}>{artist}</td>
+                <td className={styles.td}>{playcount.toLocaleString("ru-RU")}</td>
+                <td className={styles.td}>{overall.toLocaleString("ru-RU")}</td>
               </tr>
             ))}
           </tbody>
@@ -110,83 +111,6 @@ function TopArtistsPage() {
       )}
     </div>
   )
-}
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    maxWidth: 900,
-    margin: '40px auto',
-    fontFamily: 'system-ui, sans-serif',
-    padding: '0 16px',
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  form: {
-    display: 'flex',
-    gap: 12,
-    marginBottom: 16,
-  },
-  input: {
-    flex: 1,
-    padding: '10px 12px',
-    fontSize: 16,
-    border: '1px solid #ccc',
-    borderRadius: 4,
-  },
-  select: {
-    padding: '10px 12px',
-    fontSize: 16,
-    border: '1px solid #ccc',
-    borderRadius: 4,
-    background: '#fff',
-    color: '#000',
-  },
-  option: {
-    background: '#fff',
-    color: '#000',
-  },
-  button: {
-    padding: '10px 20px',
-    fontSize: 16,
-    border: 'none',
-    borderRadius: 4,
-    background: '#28a745',
-    color: '#fff',
-    cursor: 'pointer',
-  },
-  messageError: {
-    padding: '10px 12px',
-    marginBottom: 16,
-    background: '#f8d7da',
-    color: '#721c24',
-    border: '1px solid #f5c6cb',
-    borderRadius: 4,
-  },
-  messageInfo: {
-    padding: '10px 12px',
-    marginBottom: 16,
-    background: '#fff3cd',
-    color: '#856404',
-    border: '1px solid #ffeeba',
-    borderRadius: 4,
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-  },
-  th: {
-    border: '1px solid #ccc',
-    padding: '10px 12px',
-    background: '#f5f5f5',
-    textAlign: 'left',
-    fontWeight: 600,
-  },
-  td: {
-    border: '1px solid #ccc',
-    padding: '8px 12px',
-  },
 }
 
 export default TopArtistsPage

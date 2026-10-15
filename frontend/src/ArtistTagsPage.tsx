@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import styles from './ArtistTagsPage.module.css'
 
 type Tag = [string, number]
 
@@ -136,46 +137,46 @@ function ArtistTagsPage() {
     }
   }
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Artist Tags</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Artist Tags</h1>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Artist name"
-          style={styles.input}
+          className={styles.input}
           required
         />
-        <button type="submit" style={styles.button} disabled={loading}>
+        <button type="submit" className={styles.button} disabled={loading}>
           {loading ? 'Loading...' : 'Get Tags'}
         </button>
       </form>
 
-      {error && <div style={styles.messageError}>Error: {error}</div>}
+      {error && <div className={styles.messageError}>Error: {error}</div>}
 
       {tags !== null && tags.length === 0 && !error && (
-        <div style={styles.messageInfo}>No tags found for "{name.trim()}".</div>
+        <div className={styles.messageInfo}>No tags found for "{name.trim()}".</div>
       )}
 
       {tags !== null && tags.length > 0 && (
-        <table style={styles.table}>
+        <table className={styles.table}>
           <thead>
             <tr>
-              <th style={styles.th}>Tag</th>
-              <th style={styles.th}>Count</th>
-              <th style={styles.th}></th>
+              <th className={styles.th}>Tag</th>
+              <th className={styles.th}>Count</th>
+              <th className={styles.th}></th>
             </tr>
           </thead>
           <tbody>
             {tags.map(([tag, count]) => (
               <tr key={tag}>
-                <td style={styles.td}>{tag}</td>
-                <td style={styles.td}>{count.toLocaleString("ru-RU")}</td>
-                <td style={styles.tdCenter}>
+                <td className={styles.td}>{tag}</td>
+                <td className={styles.td}>{count.toLocaleString("ru-RU")}</td>
+                <td className={styles.tdCenter}>
                   <button
-                    style={styles.ignoreButton}
+                    className={styles.ignoreButton}
                     onClick={() => handleIgnoreTag(tag)}
                     disabled={ignoredTags.some((t) => t.name === tag)}
                   >
@@ -188,49 +189,49 @@ function ArtistTagsPage() {
         </table>
       )}
 
-      <div style={styles.section}>
-        <button type="button" style={styles.sectionToggle} onClick={() => setShowIgnored((prev) => !prev)}>
+      <div className={styles.section}>
+        <button type="button" className={styles.sectionToggle} onClick={() => setShowIgnored((prev) => !prev)}>
           {showIgnored ? '▾' : '▸'} Ignored Tags
         </button>
 
         {showIgnored && (
-          <div style={styles.sectionInner}>
-            <form onSubmit={handleAddIgnored} style={styles.form}>
+          <div className={styles.sectionInner}>
+            <form onSubmit={handleAddIgnored} className={styles.form}>
               <input
                 type="text"
                 value={ignoredName}
                 onChange={(e) => setIgnoredName(e.target.value)}
                 placeholder="Tag name to ignore"
-                style={styles.input}
+                className={styles.input}
               />
-              <button type="submit" style={styles.button} disabled={addingIgnored}>
+              <button type="submit" className={styles.button} disabled={addingIgnored}>
                 {addingIgnored ? 'Adding...' : 'Add to Ignored'}
               </button>
             </form>
 
-            {ignoredError && <div style={styles.messageError}>Error: {ignoredError}</div>}
+            {ignoredError && <div className={styles.messageError}>Error: {ignoredError}</div>}
 
-            {ignoredLoading && <div style={styles.messageInfo}>Loading ignored tags...</div>}
+            {ignoredLoading && <div className={styles.messageInfo}>Loading ignored tags...</div>}
 
             {!ignoredLoading && ignoredTags.length === 0 && (
-              <div style={styles.messageInfo}>No ignored tags yet.</div>
+              <div className={styles.messageInfo}>No ignored tags yet.</div>
             )}
 
             {!ignoredLoading && ignoredTags.length > 0 && (
-              <table style={styles.table}>
+              <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th style={styles.th}>Tag</th>
-                    <th style={styles.th}></th>
+                    <th className={styles.th}>Tag</th>
+                    <th className={styles.th}></th>
                   </tr>
                 </thead>
                 <tbody>
                   {ignoredTags.map((t) => (
                     <tr key={t.id}>
-                      <td style={styles.td}>{t.name}</td>
-                      <td style={styles.tdCenter}>
+                      <td className={styles.td}>{t.name}</td>
+                      <td className={styles.tdCenter}>
                         <button
-                          style={styles.removeButton}
+                          className={styles.removeButton}
                           onClick={() => handleRemoveIgnored(t.id)}
                           disabled={removingId !== null}
                         >
@@ -247,119 +248,6 @@ function ArtistTagsPage() {
       </div>
     </div>
   )
-}
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    maxWidth: 900,
-    margin: '40px auto',
-    fontFamily: 'system-ui, sans-serif',
-    padding: '0 16px',
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  form: {
-    display: 'flex',
-    gap: 12,
-    marginBottom: 16,
-  },
-  input: {
-    flex: 1,
-    padding: '10px 12px',
-    fontSize: 16,
-    border: '1px solid #ccc',
-    borderRadius: 4,
-  },
-  button: {
-    padding: '10px 20px',
-    fontSize: 16,
-    border: 'none',
-    borderRadius: 4,
-    background: '#28a745',
-    color: '#fff',
-    cursor: 'pointer',
-  },
-  messageError: {
-    padding: '10px 12px',
-    marginBottom: 16,
-    background: '#f8d7da',
-    color: '#721c24',
-    border: '1px solid #f5c6cb',
-    borderRadius: 4,
-  },
-  messageInfo: {
-    padding: '10px 12px',
-    marginBottom: 16,
-    background: '#fff3cd',
-    color: '#856404',
-    border: '1px solid #ffeeba',
-    borderRadius: 4,
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    marginBottom: 8,
-  },
-  th: {
-    border: '1px solid #ccc',
-    padding: '10px 12px',
-    background: '#f5f5f5',
-    textAlign: 'left',
-    fontWeight: 600,
-  },
-  td: {
-    border: '1px solid #ccc',
-    padding: '8px 12px',
-  },
-  tdCenter: {
-    border: '1px solid #ccc',
-    padding: '8px 12px',
-    textAlign: 'center',
-    width: 120,
-  },
-  ignoreButton: {
-    padding: '6px 12px',
-    fontSize: 14,
-    border: 'none',
-    borderRadius: 4,
-    background: '#007bff',
-    color: '#fff',
-    cursor: 'pointer',
-  },
-  removeButton: {
-    padding: '6px 12px',
-    fontSize: 14,
-    border: 'none',
-    borderRadius: 4,
-    background: '#dc3545',
-    color: '#fff',
-    cursor: 'pointer',
-  },
-  section: {
-    marginTop: 32,
-    padding: '16px',
-    border: '1px solid #ccc',
-    borderRadius: 8,
-  },
-  sectionToggle: {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    padding: 0,
-    border: 'none',
-    background: 'transparent',
-    fontSize: 18,
-    fontWeight: 600,
-    color: '#333',
-    cursor: 'pointer',
-    marginBottom: 16,
-  },
-  sectionInner: {
-    marginTop: 8,
-  },
 }
 
 export default ArtistTagsPage

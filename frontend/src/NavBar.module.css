@@ -1,0 +1,24 @@
+.nav {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 10px 16px;
+  background: #f0f0f0;
+  border-bottom: 1px solid #ddd;
+}
+
+.link {
+  padding: 8px 16px;
+  font-size: 15px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Must come after .link so the active colors win over the base ones */
+.linkActive {
+  background: #007bff;
+  color: #fff;
+}

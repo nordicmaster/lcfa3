@@ -4,6 +4,7 @@ import LastWeekPage from './LastWeekPage'
 import NavBar, { type NavItem } from './NavBar'
 import TopArtistsPage from './TopArtistsPage'
 import UserTopTagsPage from './UserTopTagsPage'
+import styles from './App.module.css'
 
 interface Artist {
   id: number
@@ -172,7 +173,7 @@ function App() {
   }
 
   return (
-    <div style={styles.container}>
+    <div className={styles.container}>
       <NavBar items={NAV_ITEMS} current={page} onNavigate={setPage} />
 
       {page === 'tags' ? (
@@ -184,30 +185,30 @@ function App() {
       ) : page === 'topArtists' ? (
         <TopArtistsPage />
       ) : loading ? (
-        <div style={styles.center}>Loading artists...</div>
+        <div className={styles.center}>Loading artists...</div>
       ) : error ? (
-        <div style={styles.center}>Error: {error}</div>
+        <div className={styles.center}>Error: {error}</div>
       ) : (
         <>
-          <h1 style={styles.title}>Artists</h1>
+          <h1 className={styles.title}>Artists</h1>
 
-      <form onSubmit={handleSubmit} style={styles.form}>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Artist name"
-          style={styles.input}
+          className={styles.input}
           required
         />
-        <button type="submit" style={styles.button} disabled={submitting}>
+        <button type="submit" className={styles.button} disabled={submitting}>
           {submitting ? 'Saving...' : 'Create / Override'}
         </button>
       </form>
 
       {message && (
         <div
-          style={
+          className={
             messageType === 'success' ? styles.messageSuccess : styles.messageError
           }
         >
@@ -215,55 +216,57 @@ function App() {
         </div>
       )}
 
-      <table style={styles.table}>
+      <table className={styles.table}>
         <thead>
           <tr>
-            <th style={styles.th}>
-              <button style={styles.sortButton} onClick={() => handleSort('name')}>
+            <th className={styles.th}>
+              <button className={styles.sortButton} onClick={() => handleSort('name')}>
                 Name {sortBy === 'name' && (order === 'asc' ? '▲' : '▼')}
               </button>
             </th>
-            <th style={styles.th}>
-              <button style={styles.sortButton} onClick={() => handleSort('listeners')}>
+            <th className={styles.th}>
+              <button className={styles.sortButton} onClick={() => handleSort('listeners')}>
                 Listeners {sortBy === 'listeners' && (order === 'asc' ? '▲' : '▼')}
               </button>
             </th>
-            <th style={styles.th}>
-              <button style={styles.sortButton} onClick={() => handleSort('scrobbles')}>
+            <th className={styles.th}>
+              <button className={styles.sortButton} onClick={() => handleSort('scrobbles')}>
                 Scrobbles {sortBy === 'scrobbles' && (order === 'asc' ? '▲' : '▼')}
               </button>
             </th>
-            <th style={styles.th}>
-              <button style={styles.sortButton} onClick={() => handleSort('ratio')}>
+            <th className={styles.th}>
+              <button className={styles.sortButton} onClick={() => handleSort('ratio')}>
                 Ratio {sortBy === 'ratio' && (order === 'asc' ? '▲' : '▼')}
               </button>
             </th>
-            <th style={styles.thNoBorder}></th>
+            <th className={styles.thNoBorder}></th>
           </tr>
         </thead>
         <tbody>
           {sortedArtists.map((artist) => (
             <tr
               key={artist.id}
-              style={{
-                ...styles.row,
-                ...(artist.id === lastInsertedId ? styles.rowHighlighted : {}),
-              }}
+              className={
+                artist.id === lastInsertedId
+                  ? `${styles.row} ${styles.rowHighlighted}`
+                  : styles.row
+              }
               onMouseEnter={() => setHoveredRow(artist.id)}
               onMouseLeave={() => setHoveredRow(null)}
             >
-              <td style={styles.td}>{artist.name}</td>
-              <td style={{ ...styles.td, background: listenersBackground(artist.listeners) }}>
+              <td className={styles.td}>{artist.name}</td>
+              <td className={styles.td} style={{ background: listenersBackground(artist.listeners) }}>
                 {artist.listeners.toLocaleString("ru-RU")}
               </td>
-              <td style={styles.td}>{artist.scrobbles.toLocaleString("ru-RU")}</td>
-              <td style={styles.td}>{artist.ratio.toFixed(2)}</td>
-              <td style={styles.tdNoBorder}>
+              <td className={styles.td}>{artist.scrobbles.toLocaleString("ru-RU")}</td>
+              <td className={styles.td}>{artist.ratio.toFixed(2)}</td>
+              <td className={styles.tdNoBorder}>
                 <button
-                  style={{
-                    ...styles.deleteButton,
-                    ...(hoveredRow === artist.id ? styles.deleteButtonVisible : {}),
-                  }}
+                  className={
+                    hoveredRow === artist.id
+                      ? `${styles.deleteButton} ${styles.deleteButtonVisible}`
+                      : styles.deleteButton
+                  }
                   onClick={() => handleDelete(artist.id)}
                   title={`Delete ${artist.name}`}
                 >
@@ -278,113 +281,6 @@ function App() {
       )}
     </div>
   )
-}
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    maxWidth: 900,
-    margin: '40px auto',
-    fontFamily: 'system-ui, sans-serif',
-    padding: '0 16px',
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  form: {
-    display: 'flex',
-    gap: 12,
-    marginBottom: 16,
-  },
-  input: {
-    flex: 1,
-    padding: '10px 12px',
-    fontSize: 16,
-    border: '1px solid #ccc',
-    borderRadius: 4,
-  },
-  button: {
-    padding: '10px 20px',
-    fontSize: 16,
-    border: 'none',
-    borderRadius: 4,
-    background: '#007bff',
-    color: '#fff',
-    cursor: 'pointer',
-  },
-  messageSuccess: {
-    padding: '10px 12px',
-    marginBottom: 16,
-    background: '#d4edda',
-    color: '#155724',
-    border: '1px solid #c3e6cb',
-    borderRadius: 4,
-  },
-  messageError: {
-    padding: '10px 12px',
-    marginBottom: 16,
-    background: '#f8d7da',
-    color: '#721c24',
-    border: '1px solid #f5c6cb',
-    borderRadius: 4,
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-  },
-  th: {
-    border: '1px solid #ccc',
-    padding: '10px 12px',
-    background: '#f5f5f5',
-    textAlign: 'left',
-    fontWeight: 600,
-  },
-  sortButton: {
-    background: 'transparent',
-    border: 'none',
-    padding: 0,
-    fontSize: 14,
-    fontWeight: 600,
-    cursor: 'pointer',
-    color: '#333',
-  },
-  td: {
-    border: '1px solid #ccc',
-    padding: '8px 12px',
-  },
-  thNoBorder: {
-    padding: '10px 12px',
-    textAlign: 'left',
-    fontWeight: 600,
-  },
-  tdNoBorder: {
-    padding: '8px 12px',
-  },
-  row: {
-    position: 'relative',
-  },
-  rowHighlighted: {
-    background: '#fff3cd',
-  },
-  deleteButton: {
-    background: 'transparent',
-    border: 'none',
-    color: '#dc3545',
-    fontSize: 16,
-    cursor: 'pointer',
-    padding: '4px 8px',
-    borderRadius: 4,
-    opacity: 0,
-    transition: 'opacity 0.2s',
-  },
-  deleteButtonVisible: {
-    opacity: 1,
-  },
-  center: {
-    textAlign: 'center',
-    marginTop: 48,
-    fontSize: 18,
-  },
 }
 
 export default App
