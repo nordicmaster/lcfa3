@@ -51,26 +51,32 @@ async def get_artists(
             reverse=order == "desc",
         )
 
-    # 1) Redis-first: when the name index exists, read every artist's
-    #    listeners/scrobbles/ratio straight from Redis. PostgreSQL is only
-    #    queried for names missing from the cache (cold/expired entries).
+    # 1) Redis-first: read from cache, backfill missing names from PostgreSQL.
     name_index = await cache.get_all_artist_names()
     if name_index is not None and name_index:
+        # Cache keys are lowercased; map back to the original DB case.
+        lower_to_original = {
+            name.strip().lower(): name.strip() for name in name_index
+        }
         cached_by_name = await cache.get_artists(name_index)
-        missing = {name.strip().lower() for name in name_index} - set(cached_by_name)
+        missing = set(lower_to_original) - set(cached_by_name)
         if missing:
             db_result = await session.execute(
-                select(ArtistModel).where(ArtistModel.name.in_(list(missing)))
+                select(ArtistModel).where(
+                    ArtistModel.name.in_(
+                        [lower_to_original[lower] for lower in missing]
+                    )
+                )
             )
             db_missing = db_result.scalars().all()
             if db_missing:
                 await cache.set_artists(db_missing)
                 for db_artist in db_missing:
                     cached_by_name[db_artist.name.strip().lower()] = db_artist
-        return sort_artists([to_read(value) for value in cached_by_name.values()])
+        if cached_by_name:
+            return sort_artists([to_read(value) for value in cached_by_name.values()])
 
-    # 2) Cold path: Redis unreachable or the index is empty (first run) — load
-    #    from PostgreSQL and warm the cache so the next request is Redis-first.
+    # 2) Cold path: load from PostgreSQL and warm the cache.
     result = await session.execute(select(ArtistModel).order_by(order_column))
     artists = result.scalars().all()
     if artists:
@@ -90,8 +96,7 @@ async def create_or_override_artist(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         )
 
-    # Dedup window: the same artist name was already handled within the last minute,
-    # so do NOT call the Last.fm API — answer from Redis first, then from the DB.
+    # Dedup window: same name posted within the last minute — skip the Last.fm call.
     if await cache.is_recently_posted(name):
         cached_artist = await cache.get_artist(name)
         if cached_artist is not None:
@@ -107,7 +112,6 @@ async def create_or_override_artist(
         )
         db_artist = db_result.scalar_one_or_none()
         if db_artist is not None:
-            # Warm Redis from the DB so the next request is served from cache.
             await cache.set_artist(db_artist)
             logger.info(
                 "Artist %r already posted within the last minute — returning data "
@@ -121,7 +125,6 @@ async def create_or_override_artist(
         print(f"{name} -- {lastfm_artist}")
         return Response(content=lastfm_artist, status_code=status.HTTP_404_NOT_FOUND)
 
-    # Upsert the freshly fetched stats, cache them and open the 1-minute dedup window.
     artist = await push_or_update(session, lastfm_artist)
     await cache.mark_posted(artist.name)
     return artist

@@ -119,6 +119,24 @@ Run Alembic migrations against the database:
 alembic upgrade head
 ```
 
+### Running Tests
+
+The backend suite lives in `tests/` and runs on **pytest** (async tests via
+`pytest-asyncio`). The tests are fully offline — in-memory SQLite and fake
+Redis, so no PostgreSQL/Redis/Last.fm services are required.
+
+```bash
+# from the repo root (venv active)
+python -m pytest -v
+```
+
+Inside the app container (once the image contains pytest, e.g. after a
+rebuild with the updated `requirements.txt`):
+
+```bash
+docker compose run --rm --no-deps app python -m pytest -v
+```
+
 ---
 
 ## API Overview

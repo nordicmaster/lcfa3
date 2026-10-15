@@ -25,6 +25,30 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'topArtists', label: 'Top Artists' },
 ]
 
+// Gradient fill for the listeners column: red (#FF9999) for small counts →
+// green (#99FF99) for large counts, mapped over the decade-logarithm range
+// (1..10,000,000). Anything above the cap stays at the green endpoint.
+const LISTENER_LOG_MIN = 0 // 10^0 = 1
+const LISTENER_LOG_MAX = 7 // 10^7 = 10 000 000
+const GRADIENT_FROM = [0xff, 0x99, 0x99] // #FF9999
+const GRADIENT_TO = [0x99, 0xff, 0x99] // #99FF99
+
+function listenersBackground(listeners: number): string | undefined {
+  if (listeners < 1) return undefined
+  const t = Math.max(
+    0,
+    Math.min(
+      1,
+      (Math.log10(listeners) - LISTENER_LOG_MIN) /
+        (LISTENER_LOG_MAX - LISTENER_LOG_MIN),
+    ),
+  )
+  const rgb = GRADIENT_FROM.map((from, i) =>
+    Math.round(from + (GRADIENT_TO[i] - from) * t),
+  )
+  return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`
+}
+
 function App() {
   const [page, setPage] = useState<Page>('artists')
 
@@ -229,7 +253,9 @@ function App() {
               onMouseLeave={() => setHoveredRow(null)}
             >
               <td style={styles.td}>{artist.name}</td>
-              <td style={styles.td}>{artist.listeners.toLocaleString("ru-RU")}</td>
+              <td style={{ ...styles.td, background: listenersBackground(artist.listeners) }}>
+                {artist.listeners.toLocaleString("ru-RU")}
+              </td>
               <td style={styles.td}>{artist.scrobbles.toLocaleString("ru-RU")}</td>
               <td style={styles.td}>{artist.ratio.toFixed(2)}</td>
               <td style={styles.tdNoBorder}>
