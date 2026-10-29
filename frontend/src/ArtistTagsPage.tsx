@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
-import styles from './ArtistTagsPage.module.css'
+﻿import { useCallback, useEffect, useState } from 'react'
+import commonStyles from './common.module.css'
 
 type Tag = [string, number]
 
@@ -137,46 +137,46 @@ function ArtistTagsPage() {
     }
   }
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Artist Tags</h1>
+    <div className={commonStyles.container}>
+      <h1 className={commonStyles.title}>Artist Tags</h1>
 
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <form onSubmit={handleSubmit} className={commonStyles.form}>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Artist name"
-          className={styles.input}
+          className={commonStyles.input}
           required
         />
-        <button type="submit" className={styles.button} disabled={loading}>
+        <button type="submit" className={commonStyles.button} disabled={loading}>
           {loading ? 'Loading...' : 'Get Tags'}
         </button>
       </form>
 
-      {error && <div className={styles.messageError}>Error: {error}</div>}
+      {error && <div className={commonStyles.messageError}>Error: {error}</div>}
 
       {tags !== null && tags.length === 0 && !error && (
-        <div className={styles.messageInfo}>No tags found for "{name.trim()}".</div>
+        <div className={commonStyles.messageInfo}>No tags found for "{name.trim()}".</div>
       )}
 
       {tags !== null && tags.length > 0 && (
-        <table className={styles.table}>
+        <table className={commonStyles.table}>
           <thead>
             <tr>
-              <th className={styles.th}>Tag</th>
-              <th className={styles.th}>Count</th>
-              <th className={styles.th}></th>
+              <th className={commonStyles.th}>Tag</th>
+              <th className={commonStyles.th}>Count</th>
+              <th className={commonStyles.th}></th>
             </tr>
           </thead>
           <tbody>
             {tags.map(([tag, count]) => (
               <tr key={tag}>
-                <td className={styles.td}>{tag}</td>
-                <td className={styles.td}>{count.toLocaleString("ru-RU")}</td>
-                <td className={styles.tdCenter}>
+                <td className={commonStyles.td}>{tag}</td>
+                <td className={commonStyles.td}>{count.toLocaleString("ru-RU")}</td>
+                <td className={commonStyles.tdCenter}>
                   <button
-                    className={styles.ignoreButton}
+                    className={commonStyles.ignoreButton}
                     onClick={() => handleIgnoreTag(tag)}
                     disabled={ignoredTags.some((t) => t.name === tag)}
                   >
@@ -189,49 +189,49 @@ function ArtistTagsPage() {
         </table>
       )}
 
-      <div className={styles.section}>
-        <button type="button" className={styles.sectionToggle} onClick={() => setShowIgnored((prev) => !prev)}>
+      <div className={commonStyles.section}>
+        <button type="button" className={commonStyles.sectionToggle} onClick={() => setShowIgnored((prev) => !prev)}>
           {showIgnored ? '▾' : '▸'} Ignored Tags
         </button>
 
         {showIgnored && (
-          <div className={styles.sectionInner}>
-            <form onSubmit={handleAddIgnored} className={styles.form}>
+          <div className={commonStyles.sectionInner}>
+            <form onSubmit={handleAddIgnored} className={commonStyles.form}>
               <input
                 type="text"
                 value={ignoredName}
                 onChange={(e) => setIgnoredName(e.target.value)}
                 placeholder="Tag name to ignore"
-                className={styles.input}
+                className={commonStyles.input}
               />
-              <button type="submit" className={styles.button} disabled={addingIgnored}>
+              <button type="submit" className={commonStyles.button} disabled={addingIgnored}>
                 {addingIgnored ? 'Adding...' : 'Add to Ignored'}
               </button>
             </form>
 
-            {ignoredError && <div className={styles.messageError}>Error: {ignoredError}</div>}
+            {ignoredError && <div className={commonStyles.messageError}>Error: {ignoredError}</div>}
 
-            {ignoredLoading && <div className={styles.messageInfo}>Loading ignored tags...</div>}
+            {ignoredLoading && <div className={commonStyles.messageInfo}>Loading ignored tags...</div>}
 
             {!ignoredLoading && ignoredTags.length === 0 && (
-              <div className={styles.messageInfo}>No ignored tags yet.</div>
+              <div className={commonStyles.messageInfo}>No ignored tags yet.</div>
             )}
 
             {!ignoredLoading && ignoredTags.length > 0 && (
-              <table className={styles.table}>
+              <table className={commonStyles.table}>
                 <thead>
                   <tr>
-                    <th className={styles.th}>Tag</th>
-                    <th className={styles.th}></th>
+                    <th className={commonStyles.th}>Tag</th>
+                    <th className={commonStyles.th}></th>
                   </tr>
                 </thead>
                 <tbody>
                   {ignoredTags.map((t) => (
                     <tr key={t.id}>
-                      <td className={styles.td}>{t.name}</td>
-                      <td className={styles.tdCenter}>
+                      <td className={commonStyles.td}>{t.name}</td>
+                      <td className={commonStyles.tdCenter}>
                         <button
-                          className={styles.removeButton}
+                          className={commonStyles.removeButton}
                           onClick={() => handleRemoveIgnored(t.id)}
                           disabled={removingId !== null}
                         >

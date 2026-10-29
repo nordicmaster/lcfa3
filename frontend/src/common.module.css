@@ -24,14 +24,17 @@
   border-radius: 4px;
 }
 
-.button {
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
-  background: #007bff;
-  color: #fff;
-  cursor: pointer;
+.th {
+  border: 1px solid #ccc;
+  padding: 10px 12px;
+  background: #f5f5f5;
+  text-align: left;
+  font-weight: 600;
+}
+
+.td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
 }
 
 .messageSuccess {
@@ -52,17 +55,96 @@
   border-radius: 4px;
 }
 
+.messageInfo {
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+}
+
+.select {
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  color: #000;
+}
+
+.option {
+  background: #fff;
+  color: #000;
+}
+
+.button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  background: #28a745;
+  color: #fff;
+  cursor: pointer;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
+  margin-bottom: 8px;
 }
 
-.th {
+.tdCenter {
   border: 1px solid #ccc;
-  padding: 10px 12px;
-  background: #f5f5f5;
-  text-align: left;
+  padding: 8px 12px;
+  text-align: center;
+  width: 120px;
+}
+
+.ignoreButton {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+}
+
+.removeButton {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  background: #dc3545;
+  color: #fff;
+  cursor: pointer;
+}
+
+.section {
+  margin-top: 32px;
+  padding: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.sectionToggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 18px;
   font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.sectionInner {
+  margin-top: 8px;
 }
 
 .sortButton {
@@ -73,11 +155,6 @@
   font-weight: 600;
   cursor: pointer;
   color: #333;
-}
-
-.td {
-  border: 1px solid #ccc;
-  padding: 8px 12px;
 }
 
 .thNoBorder {

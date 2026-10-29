@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import styles from './UserTopTagsPage.module.css'
+import commonStyles from './common.module.css'
 
 type UserTag = [string, number]
 
@@ -53,55 +53,55 @@ function UserTopTagsPage() {
   }
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>User Top Tags</h1>
+    <div className={commonStyles.container}>
+      <h1 className={commonStyles.title}>User Top Tags</h1>
 
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <form onSubmit={handleSubmit} className={commonStyles.form}>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Last.fm username"
-          className={styles.input}
+          className={commonStyles.input}
           required
         />
         <select
           value={period}
           onChange={(e) => setPeriod(e.target.value)}
-          className={styles.select}
+          className={commonStyles.select}
         >
           {PERIODS.map((p) => (
-            <option key={p.value} value={p.value} className={styles.option}>
+            <option key={p.value} value={p.value} className={commonStyles.option}>
               {p.label}
             </option>
           ))}
         </select>
-        <button type="submit" className={styles.button} disabled={loading}>
+        <button type="submit" className={commonStyles.button} disabled={loading}>
           {loading ? 'Loading...' : 'Get Top Tags'}
         </button>
       </form>
 
-      {error && <div className={styles.messageError}>Error: {error}</div>}
+      {error && <div className={commonStyles.messageError}>Error: {error}</div>}
 
       {tags !== null && tags.length === 0 && !error && (
-        <div className={styles.messageInfo}>No tags found for &quot;{name.trim()}&quot;.</div>
+        <div className={commonStyles.messageInfo}>No tags found for &quot;{name.trim()}&quot;.</div>
       )}
 
       {tags !== null && tags.length > 0 && (
-        <table className={styles.table}>
+        <table className={commonStyles.table}>
           <thead>
             <tr>
-              <th className={styles.th}>#</th>
-              <th className={styles.th}>Tag</th>
-              <th className={styles.th}>Share</th>
+              <th className={commonStyles.th}>#</th>
+              <th className={commonStyles.th}>Tag</th>
+              <th className={commonStyles.th}>Share</th>
             </tr>
           </thead>
           <tbody>
             {tags.map(([tag, share], index) => (
               <tr key={tag}>
-                <td className={styles.td}>{index + 1}</td>
-                <td className={styles.td}>{tag}</td>
-                <td className={styles.td}>{share.toFixed(2)}%</td>
+                <td className={commonStyles.td}>{index + 1}</td>
+                <td className={commonStyles.td}>{tag}</td>
+                <td className={commonStyles.td}>{share.toFixed(2)}%</td>
               </tr>
             ))}
           </tbody>

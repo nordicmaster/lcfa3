@@ -4,7 +4,7 @@ import LastWeekPage from './LastWeekPage'
 import NavBar, { type NavItem } from './NavBar'
 import TopArtistsPage from './TopArtistsPage'
 import UserTopTagsPage from './UserTopTagsPage'
-import styles from './App.module.css'
+import commonStyles from './common.module.css'
 
 interface Artist {
   id: number
@@ -173,7 +173,7 @@ function App() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={commonStyles.container}>
       <NavBar items={NAV_ITEMS} current={page} onNavigate={setPage} />
 
       {page === 'tags' ? (
@@ -185,23 +185,23 @@ function App() {
       ) : page === 'topArtists' ? (
         <TopArtistsPage />
       ) : loading ? (
-        <div className={styles.center}>Loading artists...</div>
+        <div className={commonStyles.center}>Loading artists...</div>
       ) : error ? (
-        <div className={styles.center}>Error: {error}</div>
+        <div className={commonStyles.center}>Error: {error}</div>
       ) : (
         <>
-          <h1 className={styles.title}>Artists</h1>
+          <h1 className={commonStyles.title}>Artists</h1>
 
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <form onSubmit={handleSubmit} className={commonStyles.form}>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Artist name"
-          className={styles.input}
+          className={commonStyles.input}
           required
         />
-        <button type="submit" className={styles.button} disabled={submitting}>
+        <button type="submit" className={commonStyles.button} disabled={submitting}>
           {submitting ? 'Saving...' : 'Create / Override'}
         </button>
       </form>
@@ -209,37 +209,37 @@ function App() {
       {message && (
         <div
           className={
-            messageType === 'success' ? styles.messageSuccess : styles.messageError
+            messageType === 'success' ? commonStyles.messageSuccess : commonStyles.messageError
           }
         >
           {message}
         </div>
       )}
 
-      <table className={styles.table}>
+      <table className={commonStyles.table}>
         <thead>
           <tr>
-            <th className={styles.th}>
-              <button className={styles.sortButton} onClick={() => handleSort('name')}>
+            <th className={commonStyles.th}>
+              <button className={commonStyles.sortButton} onClick={() => handleSort('name')}>
                 Name {sortBy === 'name' && (order === 'asc' ? '▲' : '▼')}
               </button>
             </th>
-            <th className={styles.th}>
-              <button className={styles.sortButton} onClick={() => handleSort('listeners')}>
+            <th className={commonStyles.th}>
+              <button className={commonStyles.sortButton} onClick={() => handleSort('listeners')}>
                 Listeners {sortBy === 'listeners' && (order === 'asc' ? '▲' : '▼')}
               </button>
             </th>
-            <th className={styles.th}>
-              <button className={styles.sortButton} onClick={() => handleSort('scrobbles')}>
+            <th className={commonStyles.th}>
+              <button className={commonStyles.sortButton} onClick={() => handleSort('scrobbles')}>
                 Scrobbles {sortBy === 'scrobbles' && (order === 'asc' ? '▲' : '▼')}
               </button>
             </th>
-            <th className={styles.th}>
-              <button className={styles.sortButton} onClick={() => handleSort('ratio')}>
+            <th className={commonStyles.th}>
+              <button className={commonStyles.sortButton} onClick={() => handleSort('ratio')}>
                 Ratio {sortBy === 'ratio' && (order === 'asc' ? '▲' : '▼')}
               </button>
             </th>
-            <th className={styles.thNoBorder}></th>
+            <th className={commonStyles.thNoBorder}></th>
           </tr>
         </thead>
         <tbody>
@@ -248,24 +248,24 @@ function App() {
               key={artist.id}
               className={
                 artist.id === lastInsertedId
-                  ? `${styles.row} ${styles.rowHighlighted}`
-                  : styles.row
+                  ? `${commonStyles.row} ${commonStyles.rowHighlighted}`
+                  : commonStyles.row
               }
               onMouseEnter={() => setHoveredRow(artist.id)}
               onMouseLeave={() => setHoveredRow(null)}
             >
-              <td className={styles.td}>{artist.name}</td>
-              <td className={styles.td} style={{ background: listenersBackground(artist.listeners) }}>
+              <td className={commonStyles.td}>{artist.name}</td>
+              <td className={commonStyles.td} style={{ background: listenersBackground(artist.listeners) }}>
                 {artist.listeners.toLocaleString("ru-RU")}
               </td>
-              <td className={styles.td}>{artist.scrobbles.toLocaleString("ru-RU")}</td>
-              <td className={styles.td}>{artist.ratio.toFixed(2)}</td>
-              <td className={styles.tdNoBorder}>
+              <td className={commonStyles.td}>{artist.scrobbles.toLocaleString("ru-RU")}</td>
+              <td className={commonStyles.td}>{artist.ratio.toFixed(2)}</td>
+              <td className={commonStyles.tdNoBorder}>
                 <button
                   className={
                     hoveredRow === artist.id
-                      ? `${styles.deleteButton} ${styles.deleteButtonVisible}`
-                      : styles.deleteButton
+                      ? `${commonStyles.deleteButton} ${commonStyles.deleteButtonVisible}`
+                      : commonStyles.deleteButton
                   }
                   onClick={() => handleDelete(artist.id)}
                   title={`Delete ${artist.name}`}

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import styles from './LastWeekPage.module.css'
+import commonStyles from './common.module.css'
 
 type WeekArtist = [string, number]
 
@@ -42,42 +42,42 @@ function LastWeekPage() {
   }
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Last Week Artists</h1>
+    <div className={commonStyles.container}>
+      <h1 className={commonStyles.title}>Last Week Artists</h1>
 
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <form onSubmit={handleSubmit} className={commonStyles.form}>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Last.fm username"
-          className={styles.input}
+          className={commonStyles.input}
           required
         />
-        <button type="submit" className={styles.button} disabled={loading}>
+        <button type="submit" className={commonStyles.button} disabled={loading}>
           {loading ? 'Loading...' : 'Get Last Week'}
         </button>
       </form>
 
-      {error && <div className={styles.messageError}>Error: {error}</div>}
+      {error && <div className={commonStyles.messageError}>Error: {error}</div>}
 
       {artists !== null && artists.length === 0 && !error && (
-        <div className={styles.messageInfo}>No artists found for "{name.trim()}".</div>
+        <div className={commonStyles.messageInfo}>No artists found for "{name.trim()}".</div>
       )}
 
       {artists !== null && artists.length > 0 && (
-        <table className={styles.table}>
+        <table className={commonStyles.table}>
           <thead>
             <tr>
-              <th className={styles.th}>Artist</th>
-              <th className={styles.th}>Playcount</th>
+              <th className={commonStyles.th}>Artist</th>
+              <th className={commonStyles.th}>Playcount</th>
             </tr>
           </thead>
           <tbody>
             {artists.map(([artist, playcount]) => (
               <tr key={artist}>
-                <td className={styles.td}>{artist}</td>
-                <td className={styles.td}>{playcount.toLocaleString("ru-RU")}</td>
+                <td className={commonStyles.td}>{artist}</td>
+                <td className={commonStyles.td}>{playcount.toLocaleString("ru-RU")}</td>
               </tr>
             ))}
           </tbody>
